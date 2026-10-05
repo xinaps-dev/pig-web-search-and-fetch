@@ -1,0 +1,85 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  extension:
+    name: Extension (format, vet, unit tests)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: extensions/pig-web-search-and-fetch
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: extensions/pig-web-search-and-fetch/go.mod
+          cache: true
+
+      - name: Check formatting
+        run: |
+          unformatted="$(gofmt -l .)"
+          if [ -n "$unformatted" ]; then
+            echo "These files are not gofmt-clean:"
+            echo "$unformatted"
+            exit 1
+          fi
+
+      - name: Vet
+        run: go vet ./...
+
+      - name: Test
+        run: go test -race -count=1 ./...
+
+  package:
+    name: Package manifest
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: extensions/pig-web-search-and-fetch/go.mod
+          cache: true
+
+      - name: Install PiG
+        run: curl -fsSL https://pi-in-go.dev/install.sh | sh
+
+      - name: Add PiG to PATH
+        run: echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      # A Go member is only discovered when its own directory is a module root,
+      # so this is what makes the published Package ship the extension at all.
+      - name: The Package exposes exactly one extension
+        run: pig package validate . --json
+
+      - name: The extension builds and registers
+        run: pig install ./extensions/pig-web-search-and-fetch --validate-only --json
+
+  integration:
+    name: End-to-end checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: extensions/pig-web-search-and-fetch/go.mod
+          cache: true
+
+      - name: Install PiG
+        run: curl -fsSL https://pi-in-go.dev/install.sh | sh
+
+      - name: Add PiG to PATH
+        run: echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Verify commands and persistence
+        run: ./scripts/verify.sh

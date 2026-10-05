@@ -1,0 +1,18 @@
+# Build output
+dist/
+*.tgz
+
+# Dependencies
+node_modules/
+
+# Go
+*.test
+*.out
+coverage/
+
+# PiG / Pi internals
+.pi/
+
+# OS
+.DS_Store
+*.log

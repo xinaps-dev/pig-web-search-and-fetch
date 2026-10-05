@@ -1,0 +1,34 @@
+{
+  "name": "pig-web-search-and-fetch",
+  "version": "0.1.0",
+  "description": "Go extension for the PiG coding agent that adds real-time web search, clean Markdown fetch and deep research via Exa, with a unified /ws command",
+  "author": "xinaps <https://github.com/xinaps-dev>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xinaps-dev/pig-web-search-and-fetch.git"
+  },
+  "bugs": {
+    "url": "https://github.com/xinaps-dev/pig-web-search-and-fetch/issues"
+  },
+  "homepage": "https://github.com/xinaps-dev/pig-web-search-and-fetch",
+  "keywords": [
+    "pig-package",
+    "pig",
+    "pig-extension",
+    "web-search",
+    "web-fetch",
+    "exa"
+  ],
+  "files": [
+    "extensions",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "pi": {
+    "extensions": [
+      "extensions/*"
+    ]
+  }
+}
